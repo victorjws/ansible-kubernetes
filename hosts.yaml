@@ -1,0 +1,29 @@
+kubernetes:
+  hosts:
+    master:
+      ansible_host: ec2-43-200-185-103.ap-northeast-2.compute.amazonaws.com
+    node1:
+      ansible_host: ec2-43-200-85-91.ap-northeast-2.compute.amazonaws.com
+    node2:
+      ansible_host: ec2-43-200-192-140.ap-northeast-2.compute.amazonaws.com
+
+  children:
+    ubuntu_env:
+      hosts:
+        master:
+        node1:
+        node2:
+
+    masters:
+      hosts:
+        master:
+
+    workers:
+      hosts:
+        node1:
+        node2:
+
+  vars:
+    ansible_user: ubuntu
+    kube_user: ubuntu
+    ansible_ssh_private_key_file: /Users/develop/projects/terraform-kubernetes/ssh_key.pem

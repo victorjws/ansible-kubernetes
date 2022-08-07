@@ -1,0 +1,10 @@
+- name: Reset kubeadm
+  hosts: masters
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - command: kubeadm reset
+      register: reset_result
+
+    - debug: "{{ reset_result }}"
