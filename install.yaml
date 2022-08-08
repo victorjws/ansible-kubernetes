@@ -39,22 +39,11 @@
         path: /etc/apt/keyrings
         state: directory
 
-    # - name: Add Docker's official GPG key (download GPG key)
-    #   uri:
-    #     path: /etc/apt/keyrings
-    #     follow_redirects: all
-    #     url: https://download.docker.com/linux/ubuntu/gpg
-    # - name: Check docker.gpg exists
-    #   stat:
-    #     path: /etc/apt/keyrings/docker.gpg
-    #   register: docker_gpg_exist
     - name: Add Docker's official GPG key (set GPG key)
-      # shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
         keyring: /etc/apt/keyrings/docker.gpg
-      # when: not docker_gpg_exist.stat.exists
 
     - name: print $(dpkg --print-architecture)
       command: dpkg --print-architecture
@@ -65,7 +54,6 @@
       register: lsb_release_info
 
     - name: Set up the repository
-      # shell: echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
       apt_repository:
         repo: deb [arch={{ architecture_info.stdout }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ lsb_release_info.stdout }} stable
         state: present
@@ -120,23 +108,13 @@
           - curl
         state: latest
 
-    # - name: Check kubernetes-archive-keyring.gpg exists
-    #   stat:
-    #     path: /usr/share/keyrings/kubernetes-archive-keyring.gpg
-    #   register: kubernetes_gpg_exist
     - name: Download the Google Cloud public signing key
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
         keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
-      # uri:
-      #   dest: /usr/share/keyrings/kubernetes-archive-keyring.gpg
-      #   follow_redirects: all
-      #   url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-      # when: not kubernetes_gpg_exist.stat.exists
 
     - name: Set up Kubernetes apt repository
-      # shell: echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
       apt_repository:
         repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
         state: present
@@ -159,13 +137,6 @@
       service:
         name: kubelet
         enabled: yes
-
-    # - name: Reboot all the kubernetes nodes.
-    #   reboot:
-    #     post_reboot_delay: 10
-    #     reboot_timeout: 40
-    #     connect_timeout: 60
-    #     test_command: uptime
 
 - name: Initialize kubeadm
   hosts: masters
@@ -209,10 +180,6 @@
       systemd:
         name: kubelet
         state: restarted
-      register: kubelet_restart_result
-
-    # - name: Print result
-    #   debug: msg="{{ kubelet_restart_result }}"
 
     - name: Get kubectl cluster-info
       become: yes
