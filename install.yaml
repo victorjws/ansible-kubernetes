@@ -5,7 +5,7 @@
 # Collection: Module의 집합.
 
 - name: Install Container Runtime
-  hosts: ubuntu_env
+  hosts: all_nodes
   gather_facts: yes
   become: yes
 
@@ -90,7 +90,7 @@
         state: restarted
 
 - name: Install kubeadm
-  hosts: ubuntu_env
+  hosts: all_nodes
   gather_facts: false
   become: yes
 
